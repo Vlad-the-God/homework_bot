@@ -10,7 +10,6 @@ import telegram
 from exceptions import InappropriateStatusException, TokenAbsentExeption
 
 
-
 logging.basicConfig(
     level=logging.DEBUG,
     filename=f'{__name__}.log',
@@ -42,7 +41,7 @@ HOMEWORK_VERDICTS = {
 
 
 def check_tokens():
-    """Проверяет доступность переменных окружения"""
+    """Проверяет доступность переменных окружения."""
     for token in (PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID):
         if token is None:
             logging.critical('Отсутствуют обязательные переменные окружения')
@@ -50,7 +49,7 @@ def check_tokens():
 
 
 def send_message(bot, message):
-    """Отравляет сообщение в чат"""
+    """Отравляет сообщение в чат."""
     try:
         bot.send_message(TELEGRAM_CHAT_ID, message)
         logging.debug('Сообщение успешно отправлено.')
@@ -59,7 +58,7 @@ def send_message(bot, message):
 
 
 def get_api_answer(timestamp):
-    """Делает запрос к единственному эндпоинту API-сервиса"""
+    """Делает запрос к единственному эндпоинту API-сервиса."""
     try:
         response = requests.get(
             ENDPOINT,
@@ -78,7 +77,7 @@ def get_api_answer(timestamp):
 
 
 def check_response(response):
-    """Проверяет ответ API на соответствие"""
+    """Проверяет ответ API на соответствие."""
     if not isinstance(response, dict):
         logging.error('Не соответсвует тип данных')
         raise TypeError('Ожидается тип данных словарь')
@@ -88,8 +87,7 @@ def check_response(response):
 
 
 def parse_status(homework):
-    """Извлекает статус конкретной домашней работы"""
-
+    """Извлекает статус конкретной домашней работы."""
     homework_name = homework.get('homework_name')
     status = homework.get('status')
 

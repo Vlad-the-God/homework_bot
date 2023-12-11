@@ -1,8 +1,10 @@
 class TokenAbsentExeption(Exception):
-    """Отсутсвие обязательного токена"""
+    """Отсутсвие обязательного токена."""
+
     pass
 
 
 class InappropriateStatusException(Exception):
-    """Несоответствие статуса ответа API"""
+    """Несоответствие статуса ответа API."""
+
     pass
