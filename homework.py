@@ -6,7 +6,10 @@ from http import HTTPStatus
 import requests
 import telegram
 
-from settings import PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
+from settings import (
+    ENDPOINT, HEADERS, HOMEWORK_VERDICTS, PRACTICUM_TOKEN,
+    RETRY_PERIOD, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID
+)
 from exceptions import InappropriateStatusException, TokenAbsentExeption
 
 
@@ -22,22 +25,9 @@ handler = logging.StreamHandler(sys.stdout)
 logger.addHandler(handler)
 
 
-RETRY_PERIOD = 600
-ENDPOINT = 'https://practicum.yandex.ru/api/user_api/homework_statuses/'
-HEADERS = {'Authorization': f'OAuth {PRACTICUM_TOKEN}'}
-
-
-HOMEWORK_VERDICTS = {
-    'approved': 'Работа проверена: ревьюеру всё понравилось. Ура!',
-    'reviewing': 'Работа взята на проверку ревьюером.',
-    'rejected': 'Работа проверена: у ревьюера есть замечания.'
-}
-
-
 def check_tokens():
     """Проверяет доступность переменных окружения."""
-    if all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID]):
-        return True
+    return all([PRACTICUM_TOKEN, TELEGRAM_TOKEN, TELEGRAM_CHAT_ID])
 
 
 def send_message(bot, message):
@@ -116,12 +106,12 @@ def main():
                     send_message(bot, message)
                 last_message = message
             timestamp = response.get('current_date', timestamp)
-            time.sleep(RETRY_PERIOD)
 
         except Exception as error:
             message = f'Сбой в работе программы: {error}'
             logging.error(f'При отправке сообщения возникла ошибка: {error}.')
-            send_message(bot, message)
+            if last_message != message:
+                send_message(bot, message)
         finally:
             time.sleep(RETRY_PERIOD)
 
@@ -129,5 +119,5 @@ def main():
 if __name__ == '__main__':
     try:
         main()
-    except sys.exit():
-        raise SystemExit
+    except KeyboardInterrupt:
+        logging.debug('Преднамеренное завершение работы')
